@@ -1,0 +1,27 @@
+li {
+    list-style-type: none;
+}
+.container-fluid {
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col-3 {
+    display: block;
+    width: 25%;
+}
+
+.col-9 {
+    display: block;
+    width: 75%;
+}
+
+.col-4 {
+    display: block;
+    width: 30%;
+    padding: 5px;
+}
