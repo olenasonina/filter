@@ -72,86 +72,73 @@
                     </form>
 
                     <form action="" method="POST" style="display: flex; flex-direction: column">
-                    <?php $colors = build_color_list(); ?>
-
                         <select class="select" name="color[]" multiple>
                             <option value="all">Цвет</option>
-
-                            <?php echo $colors ?>
-
+                            <?= build_color_list() ?>
                         </select>
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
                     <form action="" method="POST" style="display: flex; flex-direction: column">
-                    <?php $sizes = build_size_list(); ?>
-
                         <select class="select" name="size[]" multiple>
                             <option value="all">Размер</option>
-
-                            <?php echo $sizes ?>
-
+                            <?= build_size_list() ?>
                         </select>
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
                     <form action="" method="POST" style="display: flex; flex-direction: column">
-
-                    <?php $textiles = build_textile_list(); ?>
-                    
                         <select class="select" name="textile[]" multiple>
                             <option value="all">Ткань</option>
-
-                            <?php echo $textiles ?>
-
+                            <?= build_textile_list() ?>
                         </select>
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
                     <form action="" method="POST" style="display: flex; flex-direction: column">
                         <select class="select" name="style[]" multiple>
-                            <option value="all">Стиль</option>                    
+                            <option value="all">Стиль</option>                               
+                            <?= build_style_list() ?>
                         </select>
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
                     <form action="" method="POST" style="display: flex; flex-direction: column">
                         <select class="select" name="line[]" multiple>
-                            <option value="all">Линия</option>                    
+                            <option value="all">Линия</option>  
+                            <?= build_line_list() ?>                  
                         </select>
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
                     <form action="" method="POST" style="display: flex; flex-direction: column">
                         <select class="select" name="season[]" multiple>
-                            <option value="all">Сезон</option>                    
+                            <option value="all">Сезон</option> 
+                            <?= build_season_list() ?>                   
                         </select>
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
                     <form action="" method="POST" style="display: flex; flex-direction: column">
-
-                    <?php $patterns = build_pattern_list(); ?>
-
                         <select class="select" name="pattern[]" multiple>
-                            <option value="all">Узор</option>  
-                            
-                            <?php echo $patterns ?>
-
+                            <option value="all">Узор</option>                             
+                            <?= build_pattern_list() ?>
                         </select>
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
                     <form action="" method="POST" style="display: flex; flex-direction: column">
                         <select class="select" name="fashion[]" multiple>
-                            <option value="all">Фасон</option>                    
+                            <option value="all">Фасон</option>
+                            <?= build_fashion_list() ?>                
                         </select>
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
                     <form action="" method="POST" style="display: flex; flex-direction: column">
                         <select class="select" name="details[]" multiple>
-                            <option value="all">Детали</option>                    
+                            <option value="all">Детали</option>  
+                            <?= build_detail_list() ?>                  
                         </select>
                         <button class="mt-5" type="submit">Применить</button>
                     </form>

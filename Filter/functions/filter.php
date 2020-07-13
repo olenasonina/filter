@@ -64,11 +64,12 @@ function cat_id($array, $id) {
 // Функция получает из БД возможные цвета в выбранной категории
 
 function get_color_list($id) {
+    $ids = get_product_from_tree($id);
     $query = "SELECT DISTINCT aa.feature_base_color, p.product_cat_id FROM variations AS v 
     INNER JOIN products AS p ON (v.product_id=p.product_id) 
     INNER JOIN feature_variations AS fv ON (v.variation_id=fv.variation_id) 
     INNER JOIN feature_values AS aa ON (fv.feature_value_id=aa.feature_value_id) 
-    WHERE p.product_cat_id=$id AND aa.feature_id=1 AND v.image_id > 0 ORDER BY aa.feature_base_color";
+    WHERE p.product_cat_id IN($ids) AND aa.feature_id=1 AND v.image_id > 0 AND p.product_not_active=0 AND p.product_published=1 ORDER BY aa.feature_base_color";
     $res = meadb_select($query);
     return $res;
 }
@@ -90,13 +91,39 @@ function build_color_list() {
 // Функция получает из БД варианты согласно переданных параметров 
 
 function get_filter_list($id, $i, $i_sort) {
+    $ids = get_product_from_tree($id);
     $query = "SELECT DISTINCT aa.feature_value, p.product_cat_id FROM variations AS v 
               INNER JOIN products AS p ON (v.product_id=p.product_id) 
               INNER JOIN feature_variations AS fv ON (v.variation_id=fv.variation_id) 
               INNER JOIN feature_values AS aa ON (fv.feature_value_id=aa.feature_value_id) 
-              WHERE p.product_cat_id=$id AND aa.feature_id=$i AND v.image_id > 0 ORDER BY aa.feature_value $i_sort";
+              WHERE p.product_cat_id IN($ids) AND aa.feature_id=$i AND v.image_id > 0 AND p.product_not_active=0 AND p.product_published=1 ORDER BY aa.feature_value $i_sort";
     $res = meadb_select($query);
     return $res;
+}
+
+// Функция получает из БД варианты детальных характеристик согласно переданных параметров 
+
+function get_filter_list2($id, $i, $i_sort) {
+    $ids = get_product_from_tree($id);
+    $query = "SELECT DISTINCT pd.detail_value FROM products_details AS pd 
+              INNER JOIN products AS p ON (pd.product_id=p.product_id) 
+              WHERE p.product_cat_id IN($ids) AND pd.detail_name='" . $i . "' AND p.product_not_active=0 AND p.product_published=1 ORDER BY pd.detail_value $i_sort";
+    $res = meadb_select($query);
+    return $res;
+}
+
+// НЕДОПИСАННАЯ ФУНКЦИЯ
+
+function build_filter_list2($filter) {
+    if(isset($_GET['category'])) {
+        $item = $_GET['category'];
+        $filter_list = get_filter_list2($item, $filter, "DESC");
+        $filters = "";
+        foreach($filter_list as $f) {
+            $filters .= '<option value="' . $f['feature_value'] . '">' . $f['feature_value']  . '</option>';
+        }
+        return $filters;
+    }
 }
 
 // Функция формирует список размеров из выбранной категории
@@ -138,6 +165,76 @@ function build_pattern_list() {
             $patterns .= '<option value="' . $p['feature_value'] . '">' . $p['feature_value']  . '</option>';
         }
         return $patterns;
+    }
+}
+
+// Функция формирует список стилей из выбранной категории
+
+function build_style_list() {
+    if(isset($_GET['category'])) {
+        $item = $_GET['category'];
+        $style_list = get_filter_list2($item, "Стиль", "ASC");
+        $styles = "";
+        foreach($style_list as $s) {
+            $styles .= '<option value="' . $s['detail_value'] . '">' . $s['detail_value']  . '</option>';
+        }
+        return $styles;
+    }
+}
+
+// Функция формирует список линий из выбранной категории
+
+function build_line_list() {
+    if(isset($_GET['category'])) {
+        $item = $_GET['category'];
+        $line_list = get_filter_list2($item, "Линия", "ASC");
+        $lines = "";
+        foreach($line_list as $l) {
+            $lines .= '<option value="' . $l['detail_value'] . '">' . $l['detail_value']  . '</option>';
+        }
+        return $lines;
+    }
+}
+
+// Функция формирует список сезонов из выбранной категории
+
+function build_season_list() {
+    if(isset($_GET['category'])) {
+        $item = $_GET['category'];
+        $season_list = get_filter_list2($item, "Сезон", "ASC");
+        $seasons = "";
+        foreach($season_list as $s) {
+            $seasons .= '<option value="' . $s['detail_value'] . '">' . $s['detail_value']  . '</option>';
+        }
+        return $seasons;
+    }
+}
+
+// Функция формирует список фасонов из выбранной категории
+
+function build_fashion_list() {
+    if(isset($_GET['category'])) {
+        $item = $_GET['category'];
+        $fashion_list = get_filter_list2($item, "Силуэт", "ASC");
+        $fashions = "";
+        foreach($fashion_list as $s) {
+            $fashions .= '<option value="' . $s['detail_value'] . '">' . $s['detail_value']  . '</option>';
+        }
+        return $fashions;
+    }
+}
+
+// Функция формирует список деталей из выбранной категории
+
+function build_detail_list() {
+    if(isset($_GET['category'])) {
+        $item = $_GET['category'];
+        $detail_list = get_filter_list2($item, "Детали", "ASC");
+        $details = "";
+        foreach($detail_list as $s) {
+            $details .= '<option value="' . $s['detail_value'] . '">' . $s['detail_value']  . '</option>';
+        }
+        return $details;
     }
 }
 
@@ -202,7 +299,8 @@ function add_filter_sort($sort, $add) {
 
 function get_main_query() {
     return "SELECT DISTINCT p.product_title, i.image_src FROM variations AS v 
-            INNER JOIN products AS p ON (v.product_id=p.product_id)  
+            INNER JOIN products AS p ON (v.product_id=p.product_id)
+            INNER JOIN products_details AS pd ON (pd.product_id=p.product_id) 
             INNER JOIN images AS i ON (v.image_id=i.image_id) 
             INNER JOIN feature_variations AS fvt ON (v.variation_id=fvt.variation_id)
             INNER JOIN feature_values AS fv ON (fvt.feature_value_id=fv.feature_value_id)";
@@ -232,7 +330,7 @@ function test_input($data) {
 
 function get_filter_data() {
     $sql = get_main_query();
-    $where = "";
+    $where = "p.product_not_active=0 AND p.product_published=1 ";
     $sort = "";
     $data = array();
     if(isset($_GET)) {
@@ -245,12 +343,12 @@ function get_filter_data() {
         if(isset($_POST['sort1'])) {
             $data[] = $_POST['sort1'];
             $sort_cond = "";
-            if($_POST['sort1'] == "price_asc") $sort_cond = "p.product_price ASC";
-            if($_POST['sort1'] == "price_desc") $sort_cond = "p.product_price DESC";
+            if($_POST['sort1'] == "price_asc") $sort_cond = "p.product_price_and_discount ASC";
+            if($_POST['sort1'] == "price_desc") $sort_cond = "p.product_price_and_discount DESC";
             if($_POST['sort1'] == "popular") $sort_cond = "p.product_hits DESC";
             if($_POST['sort1'] == "date") $sort_cond = "p.product_date DESC";
             $sort = add_filter_sort($sort, $sort_cond);
-        }
+        } else $sort = add_filter_sort($sort, "p.product_date DESC");
         if(isset($_POST['sort2'])) {
             $data[] = $_POST['sort2'];
             
@@ -288,17 +386,23 @@ function get_filter_data() {
         }
         if(isset($_POST['style'])) {
             if($_POST['style'][0] <> "all") {
-                $data[] = $_POST['style'];
+                $items = $_POST['style'];
+                $data = to_string($items);
+                $where = add_filter_condition($where, "pd.detail_name = 'Стиль' AND pd.detail_value IN(" . $data . ")");
             }
         }
         if(isset($_POST['line'])) {
             if($_POST['line'][0] <> "all") {
-                $data[] = $_POST['line'];
+                $items = $_POST['line'];
+                $data = to_string($items);
+                $where = add_filter_condition($where, "pd.detail_name = 'Линия' AND pd.detail_value IN(" . $data . ")");
             }
         }
         if(isset($_POST['season'])) {
             if($_POST['season'][0] <> "all") {
-                $data[] = $_POST['season'];
+                $items = $_POST['season'];
+                $data = to_string($items);
+                $where = add_filter_condition($where, "pd.detail_name = 'Сезон' AND pd.detail_value IN(" . $data . ")");
             }
         }
         if(isset($_POST['pattern'])) {
@@ -310,18 +414,22 @@ function get_filter_data() {
         }
         if(isset($_POST['fashion'])) {
             if($_POST['fashion'][0] <> "all") {
-                $data[] = $_POST['fashion'];
+                $items = $_POST['fashion'];
+                $data = to_string($items);
+                $where = add_filter_condition($where, "pd.detail_name = 'Силуэт' AND pd.detail_value IN(" . $data . ")");
             }
         }
         if(isset($_POST['details'])) {
             if($_POST['details'][0] <> "all") {
-                $data[] = $_POST['details'];
+                $items = $_POST['details'];
+                $data = to_string($items);
+                $where = add_filter_condition($where, "pd.detail_name = 'Детали' AND pd.detail_value IN(" . $data . ")");
             }
         }
     }
     if($where) {
-        $sql .= " WHERE $where $sort LIMIT 30";
-    } else $sql .= "$sort LIMIT 30";
+        $sql .= " WHERE $where $sort, p.product_order DESC LIMIT 30";
+    } else $sql .= "$sort, p.product_order DESC LIMIT 30";
 
     return $sql;
 }
