@@ -92,7 +92,7 @@ function build_color_list() {
 
 function get_filter_list($id, $i, $i_sort) {
     $ids = get_product_from_tree($id);
-    $query = "SELECT DISTINCT aa.feature_value, p.product_cat_id FROM variations AS v 
+    $query = "SELECT DISTINCT aa.feature_value_id, aa.feature_value, p.product_cat_id FROM variations AS v 
               INNER JOIN products AS p ON (v.product_id=p.product_id) 
               INNER JOIN feature_variations AS fv ON (v.variation_id=fv.variation_id) 
               INNER JOIN feature_values AS aa ON (fv.feature_value_id=aa.feature_value_id) 
@@ -134,7 +134,7 @@ function build_size_list() {
         $size_list = get_filter_list($item, 2, "DESC");
         $sizes = "";
         foreach($size_list as $s) {
-            $sizes .= '<option value="' . $s['feature_value'] . '">' . $s['feature_value']  . '</option>';
+            $sizes .= '<option value="' . $s['feature_value_id'] . '">' . $s['feature_value']  . '</option>';
         }
         return $sizes;
     }
@@ -332,7 +332,11 @@ function get_filter_data() {
     $sql = get_main_query();
     $where = "p.product_not_active=0 AND p.product_published=1 ";
     $sort = "";
-    $data = array();
+    $datasort2 = [
+        'sale' => 1,
+        'new' => 2,
+        'limited' => 3
+    ];
     if(isset($_GET)) {
         if(isset($_GET['category'])) {
             $cats = get_product_from_tree();
@@ -341,17 +345,20 @@ function get_filter_data() {
     }
     if(isset($_POST)) {
         if(isset($_POST['sort1'])) {
-            $data[] = $_POST['sort1'];
             $sort_cond = "";
             if($_POST['sort1'] == "price_asc") $sort_cond = "p.product_price_and_discount ASC";
             if($_POST['sort1'] == "price_desc") $sort_cond = "p.product_price_and_discount DESC";
             if($_POST['sort1'] == "popular") $sort_cond = "p.product_hits DESC";
             if($_POST['sort1'] == "date") $sort_cond = "p.product_date DESC";
             $sort = add_filter_sort($sort, $sort_cond);
-        } else $sort = add_filter_sort($sort, "p.product_date DESC");
+        } else $sort = add_filter_sort($sort, "p.product_hits DESC");
         if(isset($_POST['sort2'])) {
-            $data[] = $_POST['sort2'];
-            
+            $data = 0;
+            if($_POST['sort2'] <> "all") {
+                $item = $_POST['sort2'];
+                $data = $datasort2[$item];
+                $where = add_filter_condition($where, "p.product_top LIKE '%$data%'");
+            }
         }
         if(isset($_POST['price_start']) || isset($_POST['price_end'])) {
             $start = test_input($_POST['price_start']);
@@ -374,7 +381,7 @@ function get_filter_data() {
             if($_POST['size'][0] <> "all") {
                 $items = $_POST['size'];
                 $data = to_string($items);
-                $where = add_filter_condition($where, "fv.feature_value IN(" . $data . ")");
+                $where = add_filter_condition($where, "fv.feature_value_id IN(" . $data . ")");
             }            
         }
         if(isset($_POST['textile'])) {
