@@ -65,7 +65,7 @@ function cat_id($array, $id) {
 
 function get_color_list($id) {
     $ids = get_product_from_tree($id);
-    $query = "SELECT DISTINCT aa.feature_base_color, p.product_cat_id FROM variations AS v 
+    $query = "SELECT DISTINCT aa.feature_base_color_id, aa.feature_base_color, p.product_cat_id FROM variations AS v 
     INNER JOIN products AS p ON (v.product_id=p.product_id) 
     INNER JOIN feature_variations AS fv ON (v.variation_id=fv.variation_id) 
     INNER JOIN feature_values AS aa ON (fv.feature_value_id=aa.feature_value_id) 
@@ -82,7 +82,7 @@ function build_color_list() {
         $colors_list = get_color_list($item);
         $colors = "";
         foreach($colors_list as $c) {
-            $colors .= '<option value="' . $c['feature_base_color'] . '">' . $c['feature_base_color']  . '</option>';
+            $colors .= '<option value="' . $c['feature_base_color_id'] . '">' . $c['feature_base_color']  . '</option>';
         }
         return $colors;
     }
@@ -148,7 +148,7 @@ function build_textile_list() {
         $textile_list = get_filter_list($item, 3, "ASC");
         $textiles = "";
         foreach($textile_list as $s) {
-            $textiles .= '<option value="' . $s['feature_value'] . '">' . $s['feature_value']  . '</option>';
+            $textiles .= '<option value="' . $s['feature_value_id'] . '">' . $s['feature_value']  . '</option>';
         }
         return $textiles;
     }
@@ -162,7 +162,7 @@ function build_pattern_list() {
         $patterns_list = get_filter_list($item, 4, "ASC");
         $patterns = "";
         foreach($patterns_list as $p) {
-            $patterns .= '<option value="' . $p['feature_value'] . '">' . $p['feature_value']  . '</option>';
+            $patterns .= '<option value="' . $p['feature_value_id'] . '">' . $p['feature_value']  . '</option>';
         }
         return $patterns;
     }
@@ -311,6 +311,15 @@ function get_main_query() {
 function to_string($items) {
     $data = "";
     foreach($items as $item) {
+        $data .= $item . ',';
+    }
+    $data = rtrim($data, ","); 
+    return $data;
+}
+
+function to_string2($items) {
+    $data = "";
+    foreach($items as $item) {
         $data .= '"' . $item . '",';
     }
     $data = rtrim($data, ","); 
@@ -373,7 +382,7 @@ function get_filter_data() {
             if($_POST['color'][0] <> "all") {
                 $items = $_POST['color'];
                 $data = to_string($items);  
-                $where = add_filter_condition($where, "fv.feature_base_color IN(" . $data . ")");
+                $where = add_filter_condition($where, "fv.feature_base_color_id IN($data)");
             }
             
         }
@@ -381,34 +390,34 @@ function get_filter_data() {
             if($_POST['size'][0] <> "all") {
                 $items = $_POST['size'];
                 $data = to_string($items);
-                $where = add_filter_condition($where, "fv.feature_value_id IN(" . $data . ")");
+                $where = add_filter_condition($where, "fv.feature_value_id IN($data)");
             }            
         }
         if(isset($_POST['textile'])) {
             if($_POST['textile'][0] <> "all") {
                 $items = $_POST['textile'];
                 $data = to_string($items);
-                $where = add_filter_condition($where, "fv.feature_value IN(" . $data . ")");
+                $where = add_filter_condition($where, "fv.feature_value_id IN($data)");
             }
         }
         if(isset($_POST['style'])) {
             if($_POST['style'][0] <> "all") {
                 $items = $_POST['style'];
-                $data = to_string($items);
+                $data = to_string2($items);
                 $where = add_filter_condition($where, "pd.detail_name = 'Стиль' AND pd.detail_value IN(" . $data . ")");
             }
         }
         if(isset($_POST['line'])) {
             if($_POST['line'][0] <> "all") {
                 $items = $_POST['line'];
-                $data = to_string($items);
+                $data = to_string2($items);
                 $where = add_filter_condition($where, "pd.detail_name = 'Линия' AND pd.detail_value IN(" . $data . ")");
             }
         }
         if(isset($_POST['season'])) {
             if($_POST['season'][0] <> "all") {
                 $items = $_POST['season'];
-                $data = to_string($items);
+                $data = to_string2($items);
                 $where = add_filter_condition($where, "pd.detail_name = 'Сезон' AND pd.detail_value IN(" . $data . ")");
             }
         }
@@ -416,20 +425,20 @@ function get_filter_data() {
             if($_POST['pattern'][0] <> "all") {
                 $items = $_POST['pattern'];
                 $data = to_string($items);
-                $where = add_filter_condition($where, "fv.feature_value IN(" . $data . ")");
+                $where = add_filter_condition($where, "fv.feature_value_id IN($data)");
             }
         }
         if(isset($_POST['fashion'])) {
             if($_POST['fashion'][0] <> "all") {
                 $items = $_POST['fashion'];
-                $data = to_string($items);
+                $data = to_string2($items);
                 $where = add_filter_condition($where, "pd.detail_name = 'Силуэт' AND pd.detail_value IN(" . $data . ")");
             }
         }
         if(isset($_POST['details'])) {
             if($_POST['details'][0] <> "all") {
                 $items = $_POST['details'];
-                $data = to_string($items);
+                $data = to_string2($items);
                 $where = add_filter_condition($where, "pd.detail_name = 'Детали' AND pd.detail_value IN(" . $data . ")");
             }
         }
