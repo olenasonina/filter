@@ -37,7 +37,7 @@
 
             <div class="col-9">
                 <div class="row">
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="sort1">
                             <option value="popular">По популярности</option>
                             <option value="date">По новизне</option>
@@ -47,7 +47,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>   
                     
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="sort2">
                             <option value="all">Все товары</option>
                             <option value="new">New</option>
@@ -57,7 +57,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">   
+                    <form action="" method="GET" style="display: flex; flex-direction: column">   
                     <?php 
                     $start = price("MIN");
                     $end = price("MAX");
@@ -71,7 +71,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="color[]" multiple>
                             <option value="all">Цвет</option>
                             <?= build_color_list() ?>
@@ -79,7 +79,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="size[]" multiple>
                             <option value="all">Размер</option>
                             <?= build_size_list() ?>
@@ -87,7 +87,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="textile[]" multiple>
                             <option value="all">Ткань</option>
                             <?= build_textile_list() ?>
@@ -95,7 +95,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="style[]" multiple>
                             <option value="all">Стиль</option>                               
                             <?= build_style_list() ?>
@@ -103,7 +103,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="line[]" multiple>
                             <option value="all">Линия</option>  
                             <?= build_line_list() ?>                  
@@ -111,7 +111,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="season[]" multiple>
                             <option value="all">Сезон</option> 
                             <?= build_season_list() ?>                   
@@ -119,7 +119,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="pattern[]" multiple>
                             <option value="all">Узор</option>                             
                             <?= build_pattern_list() ?>
@@ -127,7 +127,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="fashion[]" multiple>
                             <option value="all">Фасон</option>
                             <?= build_fashion_list() ?>                
@@ -135,7 +135,7 @@
                         <button class="mt-5" type="submit">Применить</button>
                     </form>
 
-                    <form action="" method="POST" style="display: flex; flex-direction: column">
+                    <form action="" method="GET" style="display: flex; flex-direction: column">
                         <select class="select" name="details[]" multiple>
                             <option value="all">Детали</option>  
                             <?= build_detail_list() ?>                  
