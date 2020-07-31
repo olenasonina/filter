@@ -9,6 +9,7 @@ date_default_timezone_set("Europe/Kiev");
 
 define('ROOT', dirname(__FILE__));
 
+session_start();
 
 include_once (ROOT.'/functions/filter.php');
 include_once (ROOT.'/functions/db_functions.php');

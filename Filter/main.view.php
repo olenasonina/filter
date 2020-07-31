@@ -10,6 +10,7 @@
 </head>
 <body>
     <?php
+    // echo $_SESSION['cat'];
     $a = get_filter_data();
     var_dump($a);
     ?>

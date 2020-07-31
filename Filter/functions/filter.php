@@ -352,9 +352,13 @@ function get_filter_data() {
     ];
     if(isset($_GET)) {
         if(isset($_GET['category'])) {
-            $cats = get_product_from_tree();
-            $where = add_filter_condition($where, "p.product_cat_id IN(" . $cats . ")");
-        }
+                $cats = get_product_from_tree();
+                $_SESSION['cat'] = $cats;
+                $where = add_filter_condition($where, "p.product_cat_id IN(" . $_SESSION['cat'] . ")");
+        } elseif (isset($_SESSION['cat'])) {
+            $where = add_filter_condition($where, "p.product_cat_id IN(" . $_SESSION['cat'] . ")");
+        } 
+        
         if(isset($_GET['sort1'])) {
             $sort_cond = "";
             if($_GET['sort1'] == "price_asc") $sort_cond = "p.product_price_and_discount ASC";
@@ -536,6 +540,7 @@ function get_filter_data() {
     //         }
     //     }
     // }
+    // var_dump($where);exit;
     if($where) {
         $sql .= " WHERE $where $sort, p.product_order DESC LIMIT 30";
     } else $sql .= "$sort, p.product_order DESC LIMIT 30";
