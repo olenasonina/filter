@@ -64,7 +64,7 @@ function cat_id($array, $id) {
 // Функция получает из БД возможные цвета в выбранной категории
 
 function get_color_list($id) {
-    $ids = get_product_from_tree($id);
+    $ids = get_product_from_tree_s($id);
     $query = "SELECT DISTINCT fv.feature_base_color_id, c.color_value, p.product_cat_id FROM variations AS v 
     INNER JOIN products AS p ON (v.product_id=p.product_id) 
     INNER JOIN feature_variations AS fvt ON (v.variation_id=fvt.variation_id) 
@@ -78,8 +78,8 @@ function get_color_list($id) {
 // Функция формирует список цветов из выбранной категории
 
 function build_color_list() {
-    if(isset($_GET['category'])) {
-        $item = (int)$_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = (int)$_SESSION['cat'];
         $colors_list = get_color_list($item);
         $colors = "";
         foreach($colors_list as $c) {
@@ -92,7 +92,7 @@ function build_color_list() {
 // Функция получает из БД варианты согласно переданных параметров 
 
 function get_filter_list($id, $i, $i_sort) {
-    $ids = get_product_from_tree($id);
+    $ids = get_product_from_tree_s($id);
     $query = "SELECT DISTINCT fv.feature_value_id, fv.feature_value, p.product_cat_id FROM variations AS v 
               INNER JOIN products AS p ON (v.product_id=p.product_id) 
               INNER JOIN feature_variations AS fvt ON (v.variation_id=fvt.variation_id) 
@@ -105,7 +105,7 @@ function get_filter_list($id, $i, $i_sort) {
 // Функция получает из БД варианты детальных характеристик согласно переданных параметров 
 
 function get_filter_list2($id, $i, $i_sort) {
-    $ids = get_product_from_tree($id);
+    $ids = get_product_from_tree_s($id);
     $query = "SELECT DISTINCT fdv.feature_detail_value, fdv.feature_details_values_id FROM products_details AS pd 
               INNER JOIN products AS p ON (pd.product_id=p.product_id)              
               INNER JOIN feature_details_values AS fdv ON (pd.feature_details_values_id=fdv.feature_details_values_id)
@@ -132,8 +132,8 @@ function build_filter_list2($filter) {
 // Функция формирует список размеров из выбранной категории
 
 function build_size_list() {
-    if(isset($_GET['category'])) {
-        $item = (int)$_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = (int)$_SESSION['cat'];
         $size_list = get_filter_list($item, 2, "DESC");
         $sizes = "";
         foreach($size_list as $s) {
@@ -146,8 +146,8 @@ function build_size_list() {
 // Функция формирует список тканей из выбранной категории
 
 function build_textile_list() {
-    if(isset($_GET['category'])) {
-        $item = $_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = $_SESSION['cat'];
         $textile_list = get_filter_list($item, 3, "ASC");
         $textiles = "";
         foreach($textile_list as $s) {
@@ -160,8 +160,8 @@ function build_textile_list() {
 // Функция формирует список узоров из выбранной категории
 
 function build_pattern_list() {
-    if(isset($_GET['category'])) {
-        $item = (int)$_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = (int)$_SESSION['cat'];
         $patterns_list = get_filter_list($item, 4, "ASC");
         $patterns = "";
         foreach($patterns_list as $p) {
@@ -174,8 +174,8 @@ function build_pattern_list() {
 // Функция формирует список стилей из выбранной категории
 
 function build_style_list() {
-    if(isset($_GET['category'])) {
-        $item = $_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = $_SESSION['cat'];
         $style_list = get_filter_list2($item, 21, "ASC");
         $styles = "";
         foreach($style_list as $s) {
@@ -188,8 +188,8 @@ function build_style_list() {
 // Функция формирует список линий из выбранной категории
 
 function build_line_list() {
-    if(isset($_GET['category'])) {
-        $item = (int)$_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = (int)$_SESSION['cat'];
         $line_list = get_filter_list2($item, 22, "ASC");
         $lines = "";
         foreach($line_list as $l) {
@@ -202,8 +202,8 @@ function build_line_list() {
 // Функция формирует список сезонов из выбранной категории
 
 function build_season_list() {
-    if(isset($_GET['category'])) {
-        $item = $_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = $_SESSION['cat'];
         $season_list = get_filter_list2($item, 23, "ASC");
         $seasons = "";
         foreach($season_list as $s) {
@@ -216,8 +216,8 @@ function build_season_list() {
 // Функция формирует список фасонов из выбранной категории
 
 function build_fashion_list() {
-    if(isset($_GET['category'])) {
-        $item = (int)$_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = (int)$_SESSION['cat'];
         $fashion_list = get_filter_list2($item, 9, "ASC");
         $fashions = "";
         foreach($fashion_list as $f) {
@@ -230,8 +230,8 @@ function build_fashion_list() {
 // Функция формирует список деталей из выбранной категории
 
 function build_detail_list() {
-    if(isset($_GET['category'])) {
-        $item = (int)$_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = (int)$_SESSION['cat'];
         $detail_list = get_filter_list2($item, 24, "ASC");
         $details = "";
         foreach($detail_list as $d) {
@@ -244,7 +244,7 @@ function build_detail_list() {
 // Функция получает из БД минимальную и максимальную цену в выбранной категории
 
 function get_price($i, $item) {
-    $query = "SELECT " . $i . "(p.product_price_and_discount) FROM products AS p WHERE p.product_cat_id=$item";
+    $query = "SELECT " . $i . "(p.product_price_and_discount) FROM products AS p WHERE p.product_cat_id=$item AND p.product_not_active=0 AND p.product_published=1";
     $res = meadb_select($query);
     return $res;
 }
@@ -252,8 +252,8 @@ function get_price($i, $item) {
 // Функция выводит минимальную и максимальную цену в выбранной категории
 
 function price($i) {
-    if(isset($_GET['category'])) {
-        $item = (int)$_GET['category'];
+    if(isset($_SESSION['cat'])) {
+        $item = (int)$_SESSION['cat'];
         $res = get_price($i, $item);
         $price = "";
         foreach($res as $pr) {
@@ -269,7 +269,15 @@ function get_product_from_tree() {
     $categories = get_category();
     $item = (int)$_GET['category'];
     $data = $item ."," . cat_id($categories, $item);
-    $data = !$data ? (int)$_GET['category'] : rtrim($data, ",");
+    $data = !$data ? $item : rtrim($data, ",");
+    return $data;
+}
+
+function get_product_from_tree_s() {
+    $categories = get_category();
+    $item = (int)$_SESSION['cat'];
+    $data = $item ."," . cat_id($categories, $item);
+    $data = !$data ? $item : rtrim($data, ",");
     return $data;
 }
 
@@ -378,10 +386,12 @@ function get_filter_data() {
         if(isset($_GET['price_start']) || isset($_GET['price_end'])) {
             $start = test_input($_GET['price_start']);
             $end = test_input($_GET['price_end']);
-            if($end == 0) {
+            if($end == 0 && $start <> 0) {
                 $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN " . $start . " AND 1000000");
-            } elseif($start == 0) {
+            } elseif($start == 0 && $end <> 0) {
                 $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN 0 AND " . $end);
+            } elseif($start == 0 && $end == 0) {
+                $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN 0 AND 1000000");
             } else $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN " . $start . " AND " . $end);
         }
         if(isset($_GET['color'])) {
