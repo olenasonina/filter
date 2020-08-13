@@ -363,6 +363,9 @@ function get_filter_data() {
                 $cats = get_product_from_tree();
                 $_SESSION['cat'] = $cats;
                 unset($_SESSION['color']);
+                unset($_SESSION['size']);
+                unset($_SESSION['textile']);
+                unset($_SESSION['pattern']);
                 $where = add_filter_condition($where, "p.product_cat_id IN(" . $_SESSION['cat'] . ")");
         } elseif (isset($_SESSION['cat'])) {
             $where = add_filter_condition($where, "p.product_cat_id IN(" . $_SESSION['cat'] . ")");
@@ -395,43 +398,94 @@ function get_filter_data() {
                 $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN 0 AND 1000000");
             } else $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN " . $start . " AND " . $end);
         }
+
         if(isset($_GET['color'])) {
             if($_GET['color'][0] <> "all") {
                 $items = $_GET['color'];
                 $data = to_string($items);
-                $sql2 = "SELECT `feature_value_id` FROM `feature_values` WHERE `feature_base_color_id` IN($data)";
-                $res2 = meadb_select($sql2);
+                $sql_dop = "SELECT fvt.variation_id FROM feature_values AS fv INNER JOIN feature_variations AS fvt 
+                            ON(fv.feature_value_id=fvt.feature_value_id) WHERE fv.feature_base_color_id IN($data)";
+                $res_dop = meadb_select($sql_dop);
                 $array = [];
-                foreach($res2 as $res_item) {
+                foreach($res_dop as $res_item) {
                    foreach($res_item as $value) {
                        $array[] = $value;
                    }
                 }
                 $data2 = to_string($array);
-                // $_SESSION['color'] = $data2;
-                $where = add_filter_condition($where, "fvt.feature_value_id IN($data2)");            } 
+                $_SESSION['color'] = $data2;
+                $where = add_filter_condition($where, "fvt.variation_id IN($data2)");            
+            } else unset($_SESSION['color']);
         }
-        // elseif (isset($_SESSION['color'])) {
-        //     $where = add_filter_condition($where, "fvt.feature_value_id IN(" . $_SESSION['color'] . ")");
-        // }
+        elseif (isset($_SESSION['color'])) {
+            $where = add_filter_condition($where, "fvt.variation_id IN(" . $_SESSION['color'] . ")");
+        }
+
+
         if(isset($_GET['size'])) {
             if($_GET['size'][0] <> "all") {
                 $items = $_GET['size'];
                 $data = to_string($items);
-                $where = add_filter_condition($where, "fvt.feature_value_id IN($data)");
-            }            
+
+                $sql_dop = "SELECT fvt.variation_id FROM feature_values AS fv INNER JOIN feature_variations AS fvt 
+                            ON(fv.feature_value_id=fvt.feature_value_id) WHERE fv.feature_value_id IN($data)";
+                $res_dop = meadb_select($sql_dop);
+                $array = [];
+                foreach($res_dop as $res_item) {
+                   foreach($res_item as $value) {
+                       $array[] = $value;
+                   }
+                }
+                $data2 = to_string($array);
+                $_SESSION['size'] = $data2;
+                $where = add_filter_condition($where, "fvt.variation_id IN($data2)");
+            } else unset($_SESSION['size']);      
         }
+        elseif (isset($_SESSION['size'])) {
+            $where = add_filter_condition($where, "fvt.variation_id IN(" . $_SESSION['size'] . ")");
+        }
+
+
         if(isset($_GET['textile'])) {
             if($_GET['textile'][0] <> "all") {
                 $items = $_GET['textile'];
                 $data = to_string($items);
-                $where = add_filter_condition($where, "fv.feature_value_id IN($data)");
-            }
+                $sql_dop = "SELECT fvt.variation_id FROM feature_values AS fv INNER JOIN feature_variations AS fvt 
+                            ON(fv.feature_value_id=fvt.feature_value_id) WHERE fv.feature_value_id IN($data)";
+                $res_dop = meadb_select($sql_dop);
+                $array = [];
+                foreach($res_dop as $res_item) {
+                   foreach($res_item as $value) {
+                       $array[] = $value;
+                   }
+                }
+                $data2 = to_string($array);
+                $_SESSION['textile'] = $data2;                
+                $where = add_filter_condition($where, "fvt.variation_id IN($data2)");
+            }else unset($_SESSION['textile']); 
         }
+        elseif (isset($_SESSION['textile'])) {
+            $where = add_filter_condition($where, "fvt.variation_id IN(" . $_SESSION['textile'] . ")");
+        }
+
+
         if(isset($_GET['style'])) {
             if($_GET['style'][0] <> "all") {
                 $items = $_GET['style'];
                 $data = to_string2($items);
+
+                // $sql_dop = "SELECT fvt.variation_id FROM feature_values AS fv INNER JOIN feature_variations AS fvt 
+                //             ON(fv.feature_value_id=fvt.feature_value_id) WHERE fv.feature_value_id IN($data)";
+                // $res_dop = meadb_select($sql_dop);
+                // $array = [];
+                // foreach($res_dop as $res_item) {
+                //    foreach($res_item as $value) {
+                //        $array[] = $value;
+                //    }
+                // }
+                // $data2 = to_string($array);
+                // $_SESSION['textile'] = $data2;     
+
                 $where = add_filter_condition($where, "fdv.feature_detail_id = 21 AND pd.feature_details_values_id IN(" . $data . ")");
             }
         }
@@ -453,9 +507,25 @@ function get_filter_data() {
             if($_GET['pattern'][0] <> "all") {
                 $items = $_GET['pattern'];
                 $data = to_string($items);
-                $where = add_filter_condition($where, "fv.feature_value_id IN($data)");
-            }
+                
+                $sql_dop = "SELECT fvt.variation_id FROM feature_values AS fv INNER JOIN feature_variations AS fvt 
+                            ON(fv.feature_value_id=fvt.feature_value_id) WHERE fv.feature_value_id IN($data)";
+                $res_dop = meadb_select($sql_dop);
+                $array = [];
+                foreach($res_dop as $res_item) {
+                   foreach($res_item as $value) {
+                       $array[] = $value;
+                   }
+                }
+                $data2 = to_string($array);
+                $_SESSION['pattern'] = $data2;                
+                $where = add_filter_condition($where, "fvt.variation_id IN($data2)");
+            } else unset($_SESSION['pattern']); 
         }
+        elseif (isset($_SESSION['pattern'])) {
+            $where = add_filter_condition($where, "fvt.variation_id IN(" . $_SESSION['pattern'] . ")");
+        }
+
         if(isset($_GET['fashion'])) {
             if($_GET['fashion'][0] <> "all") {
                 $items = $_GET['fashion'];

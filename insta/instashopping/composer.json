@@ -1,0 +1,15 @@
+{
+    "name": "sonina/insta",
+    "description": "get photo from insta profile",
+    "type": "project",
+    "require": {
+        "pgrimaud/instagram-user-feed": "^6.3"
+    },
+    "license": "free",
+    "authors": [
+        {
+            "name": "SoninaOA",
+            "email": "o.sonona1986@gmail.com"
+        }
+    ]
+}
