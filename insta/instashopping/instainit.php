@@ -8,7 +8,7 @@ ini_set("memory_limit", "50M");
 set_time_limit (0);
 date_default_timezone_set("Europe/Kiev");
 
-define('ROOT', "/var/www/html/dz/insta/instashopping");
+define('ROOT', "/var/www/arjen.ua/data/www/arjen.ua/insta/instashopping");
 
 require_once ROOT.'/vendor/autoload.php';
 require_once ROOT.'/config.php';

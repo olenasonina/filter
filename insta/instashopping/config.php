@@ -8,9 +8,9 @@ class Data {
     private static $password = "Evgena2323Terevega";
     private static $bd_data = [
         "db_host" => "localhost",
-        "db_user" => "root",
-        "db_pass" => "15081986",
-        "db_table" => "insta_work"
+        "db_user" => "db_user",
+        "db_pass" => "Mrh9uZSri3wwQHGh",
+        "db_table" => "arjen_ua_db"
     ];
 
     public static function getLogin() {
