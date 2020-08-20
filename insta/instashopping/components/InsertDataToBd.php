@@ -5,11 +5,13 @@ class InsertDataToBd {
         try {
             $conn = ConnectToBD::connect();
             $conn->beginTransaction();
-            $sql = "INSERT INTO insta (ins_photo) VALUES (:photo)";
+            $sql = "INSERT INTO insta (ins_photo, ins_time) VALUES (:photo, :time)";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':photo', $photo);
+            $stmt->bindParam(':time', $time);
             foreach($items as $item) {
-                $photo = $item;
+                $photo = $item['url'];
+                $time = $item['date'];
                 $stmt -> execute();
             }
             $conn->commit();

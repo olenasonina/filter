@@ -16,7 +16,7 @@ class SelectDataFromBD
                 $result[]=$row;
             }
             foreach($result as $value) {
-                    $my_result[] = $value['ins_photo'];
+                    $my_result[] = $value['ins_time'];
             }
             $stmt = null;
             return $my_result;

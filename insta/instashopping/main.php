@@ -13,24 +13,25 @@ $api->login($username, $password);
 //Получение первых 12 фото, если они выложены за последние сутки
 
 $profile = $api->getProfile($username);
-$first_part[] = printMedias($profile->getMedias());
+$first_part = printMedias($profile->getMedias());
 
 //Получение еще 36 фото, если они выложены за последние сутки
 
 for($i=0; $i<3; $i++) {
     $profile = $api->getMoreMedias($profile);
-    $second_part[] = printMedias($profile->getMedias());  
+    $second_part = printMedias($profile->getMedias());  
 }
 
 //Получение массива данных
 
 $urls = getURL($first_part, $second_part);
+krsort($urls);
 
 //Получение данных из БД и исключение из массива дублей
 
-$bd_data = SelectDataFromBD::select("SELECT * FROM insta");
+$bd_data = SelectDataFromBD::select("SELECT ins_time FROM insta");
 foreach($urls as $key => $url) {
-    if(in_array($url, $bd_data)) {
+    if(in_array($url['date'], $bd_data)) {
         unset($urls[$key]);
     } 
 } 
@@ -45,23 +46,18 @@ if(count($urls)>0) {
 //Функции
 
 function getURL($first_part, $second_part) {
-    $photos_url = array_merge(array_values($first_part), array_values($second_part));
-    $urls = [];
-    foreach($photos_url as $photos) {
-        foreach($photos as $value) {
-            $urls[] = $value;
-        }
-        return $urls;
-    }
+    $photos_url = array_merge($first_part, $second_part);
+    return $photos_url;
 }
 
 
 function printMedias(array $medias)
 {
     $albom = [];
-    foreach ($medias as $media) {
+    foreach ($medias as $key => $media) {
         if($media->getDate()->format('U') > (time()-(2*24*60*60))) {
-            $albom[] = $media->getThumbnailSrc();
+            $albom[$key]['url'] = $media->getThumbnailSrc();
+            $albom[$key]['date'] = $media->getDate()->format('Y-m-d H:i:s');
         }
        
     }
