@@ -12,9 +12,15 @@
     <?php
     $a = get_filter_data();
     var_dump($a);
-    echo "<br><br>";
-    $b = $_SESSION;
-    var_dump($b);
+    echo "<br><br>";    
+    if(isset($_SESSION['cat'])) {
+       echo "cat =>" . $_SESSION['cat']; 
+    }
+    echo "<br><br>"; 
+
+    if(isset($_SESSION['ids'])) {
+        var_dump($_SESSION['ids']); 
+     }
     ?>
 <div style="width: 80%; margin: 50px auto">
     <div class="container-fluid">
