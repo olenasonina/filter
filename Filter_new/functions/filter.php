@@ -97,6 +97,17 @@ function build_color_list() {
 // Функция дописывает условие для того, чтобы в фильтрах отражались только актуальные параметры для уже выбранных фильтров 
 
 function get_filter_where ($dop_where) {   
+    if(isset($_SESSION['ids']['price_start']) || isset($_SESSION['ids']['price_end'])) {
+        $start = $_SESSION['ids']['price_start'];
+        $end = $_SESSION['ids']['price_end'];
+        if($end == 0 && $start <> 0) {
+            $dop_where = add_filter_condition($dop_where, "p.product_price_and_discount BETWEEN " . $start . " AND 1000000");
+        } elseif($start == 0 && $end <> 0) {
+            $dop_where = add_filter_condition($dop_where, "p.product_price_and_discount BETWEEN 0 AND " . $end);
+        } elseif($start == 0 && $end == 0) {
+            $dop_where = add_filter_condition($dop_where, "p.product_price_and_discount BETWEEN 0 AND 1000000");
+        } else $dop_where = add_filter_condition($dop_where, "p.product_price_and_discount BETWEEN " . $start . " AND " . $end);
+    }
     if(isset($_SESSION['variations']['color'])) {
         $dop_where = add_filter_condition($dop_where, "v.variation_id IN (" . $_SESSION['variations']['color'] . ")");
     }
@@ -114,6 +125,9 @@ function get_filter_where ($dop_where) {
     }
     if(isset($_SESSION['variations']['line'])) {
         $dop_where = add_filter_condition($dop_where, "v.variation_id IN (" . $_SESSION['variations']['line'] . ")");
+    }
+    if(isset($_SESSION['variations']['fashion'])) {
+        $dop_where = add_filter_condition($dop_where, "v.variation_id IN (" . $_SESSION['variations']['fashion'] . ")");
     }
     if(isset($_SESSION['variations']['season'])) {
         $dop_where = add_filter_condition($dop_where, "v.variation_id IN (" . $_SESSION['variations']['season'] . ")");
@@ -192,8 +206,9 @@ function build_size_list() {
 // Функция формирует список тканей из выбранной категории
 
 function build_textile_list() {
-    if(isset($_SESSION['cat'])) {
-        $item = $_SESSION['cat'];
+    if(isset($_SESSION['cat'])) {// $start = price("MIN");
+        // $end = price("MAX");
+        $item = (int)$_SESSION['cat'];
         $textile_list = get_filter_list($item, 3, "ASC");
         $textiles = "";
         foreach($textile_list as $s) {
@@ -221,7 +236,7 @@ function build_pattern_list() {
 
 function build_style_list() {
     if(isset($_SESSION['cat'])) {
-        $item = $_SESSION['cat'];
+        $item = (int)$_SESSION['cat'];
         $style_list = get_filter_list2($item, 21, "ASC");
         $styles = "";
         foreach($style_list as $s) {
@@ -249,7 +264,7 @@ function build_line_list() {
 
 function build_season_list() {
     if(isset($_SESSION['cat'])) {
-        $item = $_SESSION['cat'];
+        $item = (int)$_SESSION['cat'];
         $season_list = get_filter_list2($item, 23, "ASC");
         $seasons = "";
         foreach($season_list as $s) {
@@ -423,6 +438,7 @@ function get_filter_data() {
             if($_GET['sort1'] == "date") $sort_cond = "p.product_date DESC";
             $sort = add_filter_sort($sort, $sort_cond);
         } else $sort = add_filter_sort($sort, "p.product_hits DESC");
+
         if(isset($_GET['sort2'])) {
             $data = 0;
             if($_GET['sort2'] <> "all") {
@@ -431,9 +447,12 @@ function get_filter_data() {
                 $where = add_filter_condition($where, "p.product_top LIKE '%$data%'");
             }
         }
+
         if(isset($_GET['price_start']) || isset($_GET['price_end'])) {
             $start = test_input($_GET['price_start']);
             $end = test_input($_GET['price_end']);
+            $_SESSION['ids']['price_start'] = $start;
+            $_SESSION['ids']['price_end'] = $end;
             if($end == 0 && $start <> 0) {
                 $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN " . $start . " AND 1000000");
             } elseif($start == 0 && $end <> 0) {
@@ -441,7 +460,17 @@ function get_filter_data() {
             } elseif($start == 0 && $end == 0) {
                 $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN 0 AND 1000000");
             } else $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN " . $start . " AND " . $end);
-        }
+        } elseif (isset($_SESSION['ids']['price_start']) || isset($_SESSION['ids']['price_end'])) {
+            $start = $_SESSION['ids']['price_start'];
+            $end = $_SESSION['ids']['price_end'];
+            if($end == 0 && $start <> 0) {
+                $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN " . $start . " AND 1000000");
+            } elseif($start == 0 && $end <> 0) {
+                $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN 0 AND " . $end);
+            } elseif($start == 0 && $end == 0) {
+                $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN 0 AND 1000000");
+            } else $where = add_filter_condition($where, "p.product_price_and_discount BETWEEN " . $start . " AND " . $end);
+        } 
 
         if(isset($_GET['color'])) {
             if($_GET['color'][0] <> "all") {
@@ -636,10 +665,29 @@ function get_filter_data() {
         if(isset($_GET['fashion'])) {
             if($_GET['fashion'][0] <> "all") {
                 $items = $_GET['fashion'];
-                $data = to_string2($items);
-                $where = add_filter_condition($where, "fdv.feature_detail_id = 9 AND pd.feature_details_values_id IN(" . $data . ")");
-            }
+                $data = to_string($items);
+                $_SESSION['ids']['fashion'] = $data;
+                $sql_dop = "SELECT v.variation_id FROM variations AS v INNER JOIN products AS p ON (v.product_id = p.product_id) INNER JOIN products_details AS pd 
+                ON (p.product_id = pd.product_id) WHERE pd.feature_details_values_id IN($data)";
+                $res_dop = meadb_select($sql_dop);
+                $array = [];
+                foreach($res_dop as $res_item) {
+                   foreach($res_item as $value) {
+                       $array[] = $value;
+                   }
+                }
+                $data2 = to_string($array);
+                $_SESSION['variations']['fashion'] = $data2;     
+
+                $where = add_filter_condition($where, "fvt.variation_id IN(" . $data2 . ")");
+            } else {
+                unset($_SESSION['variations']['fashion']);
+                unset($_SESSION['ids']['fashion']);
+            } 
+        } elseif (isset($_SESSION['variations']['fashion'])) {
+            $where = add_filter_condition($where, "fvt.variation_id IN(" . $_SESSION['variations']['fashion'] . ")");
         }
+
         if(isset($_GET['details'])) {
             if($_GET['details'][0] <> "all") {
                 $items = $_GET['details'];

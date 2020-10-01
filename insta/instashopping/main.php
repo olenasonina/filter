@@ -55,7 +55,7 @@ function printMedias(array $medias)
 {
     $albom = [];
     foreach ($medias as $key => $media) {
-        if($media->getDate()->format('U') > (time()-(2*24*60*60))) {
+        if($media->getDate()->format('U') > (time()-(6*24*60*60))) {
             $albom[$key]['url'] = $media->getThumbnailSrc();
             $albom[$key]['date'] = $media->getDate()->format('Y-m-d H:i:s');
         }

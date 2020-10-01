@@ -12,14 +12,6 @@
     <?php
     $a = get_filter_data();
     var_dump($a);
-    echo "<br><br>";    
-    if(isset($_SESSION['cat'])) {
-       echo "cat =>" . $_SESSION['cat']; 
-    }
-    echo "<br><br>";
-    if(isset($_SESSION['ids'])) {
-        var_dump($_SESSION['ids']); 
-     }
     ?>
 <div style="width: 80%; margin: 50px auto">
     <div class="container-fluid">
@@ -44,6 +36,7 @@
 
 
             <div class="col-9">
+
                 <div class="row">
                     <form action="" method="GET" name='form_sort1' style="display: flex; flex-direction: column; margin: 0 5px 10px 5px">
                         <select class="select" name="sort1">
@@ -65,15 +58,11 @@
                         <button class="submit mt-5" type="submit">Применить</button>
                     </form>
 
+                    <?php if(isset($_GET['category'])): ?>
+
                     <form action="" method="GET" name='form_price' style="display: flex; flex-direction: column; margin: 0 5px 10px 5px">   
                     <?php 
-                    // if(isset($_SESSION['ids']['price_start']) && $_SESSION['ids']['price_start']>0) {
-                    //     $start = $_SESSION['ids']['price_start'];
-                    // } else 
-                    $start = price("MIN");
-                    // if(isset($_SESSION['ids']['price_end']) && $_SESSION['ids']['price_end']>0) {
-                    //     $end = $_SESSION['ids']['price_end'];
-                    // } else 
+                    $start = price("MIN"); 
                     $end = price("MAX");
                     ?>
                             <label>Цена</label>
@@ -156,7 +145,9 @@
                         </div>        
                         <button class="submit mt-5" type="submit">Применить</button>
                     </form>
+                    <?php endif ?>
                 </div>
+                
 
                 <!-- Вывод товара -->
 
